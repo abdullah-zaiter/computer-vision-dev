@@ -100,7 +100,7 @@ int main()
   cvCreateTrackbar("HighB", "Control", &iHighB, 255);
   cvCreateTrackbar("Canny thresh:", "Control", &thresh, max_thresh, thresh_callback );
   
-  imgOriginal = imread("calib1.jpg");
+
   namedWindow("Original", WINDOW_NORMAL);
   imshow("Original", imgOriginal);
   resizeWindow("Original", 600, 600);
@@ -111,34 +111,29 @@ int main()
   double dt=0,frequencia = 1.234282;
   while (true)
   {
-    Mat imgThresholded;
-    
+    imgOriginal = imread("calib1.jpg");
     tempo_atual = getMicrotime();
     dt = tempo_atual - tempo_aux;
     dt /= 1000000;
     frequencia = (1/dt); 
     cout << "frequencia = " << setprecision(8) <<frequencia << endl;
-    cout << "atual = " << tempo_atual << endl;
-    cout << "anterior = " << tempo_aux << endl;
     cout << "dt = " << dt << endl;
-    inRange(imgOriginal, Scalar(iLowB, iLowG, iLowR), Scalar(iHighB, iHighG, iHighR), imgThresholded);
-    GaussianBlur(imgThresholded,image1,size,0);  
+    //inRange(imgOriginal, Scalar(iLowB, iLowG, iLowR), Scalar(iHighB, iHighG, iHighR), imgThresholded);
+    //GaussianBlur(imgThresholded,image1,size,0);  
     //medianBlur(image1, image1, 3);
-    adaptiveThreshold(image1, image1,255,CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY,75,10);  
-    bitwise_not(image1, image1);  
-    //cvtColor(imgOriginal,image1,CV_BGR2GRAY);
-    //Canny(image1,image1, thresh, thresh*2, 3);
-    
-    thresh_callback( 0);
-    //namedWindow("Canny", WINDOW_NORMAL);
-    //imshow("Canny", image1);
-    //resizeWindow("Canny", 600, 600);
-
-    namedWindow("Thresholded Image", WINDOW_NORMAL);
-    imshow("Thresholded Image", imgThresholded);   
-    resizeWindow("Thresholded Image", 600, 600);
+    //adaptiveThreshold(image1, image1,255,CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY,75,10);  
+    //bitwise_not(image1, image1);  
+    cvtColor(imgOriginal,image1,CV_BGR2Lab);
+/*
+    namedWindow("Original Image", WINDOW_NORMAL);
+    imshow("Original Image", imgOriginal);   
+    resizeWindow("Original Image", 600, 600);
 
     
+    namedWindow("Image LAB", WINDOW_NORMAL);
+    imshow("Image LAB", image1);   
+    resizeWindow("Image LAB", 600, 600);
+*/  
     if (waitKey(30) == 27)
     {
         cout << "esc key is pressed by user" << endl;
