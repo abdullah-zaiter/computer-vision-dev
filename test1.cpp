@@ -1,9 +1,10 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
+#include<iomanip>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-
 #define MIN_B_B 0
 #define MAX_B_B 255
 
@@ -43,6 +44,11 @@ void thresh_callback(int);
 Mat image1, imgOriginal;
 RNG rng(12345);
 
+long long unsigned int  getMicrotime(){
+  struct timeval currentTime;
+  gettimeofday(&currentTime, NULL);
+  return currentTime.tv_sec * (int)1e6 + currentTime.tv_usec;
+}
 
 void thresh_callback(int)
 {
@@ -74,7 +80,6 @@ void thresh_callback(int)
 int main()
 {
   namedWindow("Control", CV_WINDOW_AUTOSIZE);
-
   int iLowR = 0;
   int iHighR = 255;
 
@@ -101,13 +106,22 @@ int main()
   resizeWindow("Original", 600, 600);
 
   Size size(3,3); 
+
+  long long unsigned int tempo_atual=0, tempo_aux=0;
+  double dt=0,frequencia = 1.234282;
   while (true)
   {
-
     Mat imgThresholded;
-
-    inRange(imgOriginal, Scalar(iLowB, iLowG, iLowR), Scalar(iHighB, iHighG, iHighR), imgThresholded);
     
+    tempo_atual = getMicrotime();
+    dt = tempo_atual - tempo_aux;
+    dt /= 1000000;
+    frequencia = (1/dt); 
+    cout << "frequencia = " << setprecision(8) <<frequencia << endl;
+    cout << "atual = " << tempo_atual << endl;
+    cout << "anterior = " << tempo_aux << endl;
+    cout << "dt = " << dt << endl;
+    inRange(imgOriginal, Scalar(iLowB, iLowG, iLowR), Scalar(iHighB, iHighG, iHighR), imgThresholded);
     GaussianBlur(imgThresholded,image1,size,0);  
     //medianBlur(image1, image1, 3);
     adaptiveThreshold(image1, image1,255,CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY,75,10);  
@@ -130,6 +144,7 @@ int main()
         cout << "esc key is pressed by user" << endl;
       break; 
     }
+    tempo_aux = tempo_atual;
   }
 
   return 0;
